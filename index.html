@@ -388,7 +388,8 @@
 
 
         // --- RELATIONSHIP COUNTER (14 AĞUSTOS 2026) ---
-        const startDate = new Date('2026-08-14T00:00:00');
+        // Mobil Chrome ve iOS tarayıcı uyumluluğu için sayısal tarih tanımı
+        const startDate = new Date(2026, 7, 14, 0, 0, 0); // Yıl, Ay (0-indexed: 7 = Ağustos), Gün, Saat, Dk, Sn
 
         function updateCounter() {
             const now = new Date();
@@ -419,4 +420,56 @@
         let isPlaying = false;
 
         musicBtn.addEventListener('click', () => {
-            i
+            if (!isPlaying) {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    musicIcon.className = 'fa-solid fa-pause text-pink-400';
+                    musicText.innerText = 'Durdur';
+                }).catch(err => {
+                    alert("Müzik oynatılırken bir sorun oluştu. Lütfen tarayıcı izinlerini kontrol edin.");
+                });
+            } else {
+                bgMusic.pause();
+                isPlaying = false;
+                musicIcon.className = 'fa-solid fa-music text-base';
+                musicText.innerText = 'Romantik Müzik Çal';
+            }
+        });
+
+
+        // --- SURPRISE HEART EXPLOSION ---
+        const heartBtn = document.getElementById('heart-btn');
+
+        heartBtn.addEventListener('click', (e) => {
+            for (let i = 0; i < 25; i++) {
+                const mat = new THREE.MeshPhongMaterial({ color: 0xff007f, shininess: 120 });
+                const mesh = new THREE.Mesh(heartGeo, mat);
+                mesh.scale.set(0.65, 0.65, 0.65);
+                mesh.rotation.x = Math.PI;
+                mesh.position.set(0, -5, 10);
+                scene.add(mesh);
+
+                const targetX = (Math.random() - 0.5) * 40;
+                const targetY = Math.random() * 30 + 10;
+                const targetZ = (Math.random() - 0.5) * 25;
+
+                let progress = 0;
+                const burstAnim = () => {
+                    progress += 0.02;
+                    mesh.position.x += (targetX - mesh.position.x) * 0.05;
+                    mesh.position.y += (targetY - mesh.position.y) * 0.05;
+                    mesh.position.z += (targetZ - mesh.position.z) * 0.05;
+                    mesh.rotation.y += 0.06;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(burstAnim);
+                    } else {
+                        scene.remove(mesh);
+                    }
+                };
+                burstAnim();
+            }
+        });
+    </script>
+</body>
+</html>
